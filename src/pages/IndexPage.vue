@@ -114,27 +114,36 @@
 
 <script setup>
 import { computed } from "vue";
+import { useTracker } from "src/composables/useTracker";
 
 defineOptions({
   name: "IndexPage",
 });
 
+const { projects, tasks, activeProjects, completedTasks } = useTracker();
+
 const stats = computed(() => [
   {
     label: "Active Projects",
-    value: "0",
+    value: activeProjects.value.length,
     description: "Projects in progress",
     icon: "folder",
   },
   {
     label: "Tasks To Do",
-    value: "0",
+    value: tasks.value.filter((task) => task.status !== "completed").length,
     description: "Tasks awaiting action",
     icon: "check_circle",
   },
   {
+    label: "Due Soon",
+    value: tasks.value.filter((task) => task.dueDate).length,
+    description: "Tasks approaching deadline",
+    icon: "event",
+  },
+  {
     label: "Completed",
-    value: "0",
+    value: completedTasks.value.length,
     description: "Tasks completed",
     icon: "task_alt",
   },
