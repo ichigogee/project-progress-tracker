@@ -55,6 +55,58 @@ export function useTracker() {
     return "Minimal";
   };
 
+  const addProject = (projectInput) => {
+    const now = new Date().toISOString();
+
+    const project = {
+      id: `project-${crypto.randomUUID()}`,
+      name: projectInput.name.trim(),
+      description: projectInput.description?.trim() || "",
+      status: projectInput.status || "planned",
+      startDate: projectInput.startDate || "",
+      dueDate: projectInput.dueDate || "",
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    data.value.projects.push(project);
+    saveData();
+
+    return project;
+  };
+
+  const updateProject = (projectId, updates) => {
+    const project = data.value.projects.find((item) => item.id === projectId);
+
+    if (!project) return false;
+
+    Object.assign(project, updates, {
+      updatedAt: new Date().toISOString(),
+    });
+
+    saveData();
+    return true;
+  };
+
+  const archiveProject = (projectId) => {
+    return updateProject(projectId, {
+      status: "archived",
+    });
+  };
+
+  const deleteProject = (projectId) => {
+    data.value.projects = data.value.projects.filter(
+      (project) => project.id !== projectId
+    );
+
+    //prevent orphaned records
+    data.value.tasks = data.value.tasks.filter(
+      (task) => task.projectId !== projectId
+    );
+
+    saveData();
+  };
+
   return {
     projects,
     tasks,
@@ -64,5 +116,9 @@ export function useTracker() {
     priorityScore,
     getPriorityLabel,
     saveData,
+    addProject,
+    updateProject,
+    archiveProject,
+    deleteProject,
   };
 }

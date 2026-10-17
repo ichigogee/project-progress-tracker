@@ -1,0 +1,73 @@
+[1mdiff --git a/src/composables/useTracker.js b/src/composables/useTracker.js[m
+[1mindex 4c84700..883f78b 100644[m
+[1m--- a/src/composables/useTracker.js[m
+[1m+++ b/src/composables/useTracker.js[m
+[36m@@ -55,6 +55,58 @@[m [mexport function useTracker() {[m
+     return "Minimal";[m
+   };[m
+ [m
+[32m+[m[32m  const addProject = (projectInput) => {[m
+[32m+[m[32m    const now = new Date().toISOString();[m
+[32m+[m
+[32m+[m[32m    const project = {[m
+[32m+[m[32m      id: `project-${crypto.randomUUID()}`,[m
+[32m+[m[32m      name: projectInput.name.trim(),[m
+[32m+[m[32m      description: projectInput.description?.trim() || "",[m
+[32m+[m[32m      status: projectInput.status || "planned",[m
+[32m+[m[32m      startDate: projectInput.startDate || "",[m
+[32m+[m[32m      dueDate: projectInput.dueDate || "",[m
+[32m+[m[32m      createdAt: now,[m
+[32m+[m[32m      updatedAt: now,[m
+[32m+[m[32m    };[m
+[32m+[m
+[32m+[m[32m    data.value.projects.push(project);[m
+[32m+[m[32m    saveData();[m
+[32m+[m
+[32m+[m[32m    return project;[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  const updateProject = (projectId, updates) => {[m
+[32m+[m[32m    const project = data.value.projects.find((item) => item.id === projectId);[m
+[32m+[m
+[32m+[m[32m    if (!project) return false;[m
+[32m+[m
+[32m+[m[32m    Object.assign(project, updates, {[m
+[32m+[m[32m      updatedAt: new Date.toISOString(),[m
+[32m+[m[32m    });[m
+[32m+[m
+[32m+[m[32m    saveData();[m
+[32m+[m[32m    return true;[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  const archiveProject = (projectId) => {[m
+[32m+[m[32m    return updateProject(projectId, {[m
+[32m+[m[32m      status: "archived",[m
+[32m+[m[32m    });[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  const deleteProject = (projectId) => {[m
+[32m+[m[32m    data.value.projects = data.value.projects.filter([m
+[32m+[m[32m      (project) => project.id !== projectId[m
+[32m+[m[32m    );[m
+[32m+[m
+[32m+[m[32m    //prevent orphaned records[m
+[32m+[m[32m    data.value.tasks = data.value.tasks.filter([m
+[32m+[m[32m      (task) => task.projectId !== projectId[m
+[32m+[m[32m    );[m
+[32m+[m
+[32m+[m[32m    saveData();[m
+[32m+[m[32m  };[m
+[32m+[m
+   return {[m
+     projects,[m
+     tasks,[m
+[36m@@ -64,5 +116,9 @@[m [mexport function useTracker() {[m
+     priorityScore,[m
+     getPriorityLabel,[m
+     saveData,[m
+[32m+[m[32m    addProject,[m
+[32m+[m[32m    updateProject,[m
+[32m+[m[32m    archiveProject,[m
+[32m+[m[32m    deleteProject,[m
+   };[m
+ }[m
